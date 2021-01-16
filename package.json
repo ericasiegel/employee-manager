@@ -15,5 +15,11 @@
   "bugs": {
     "url": "https://github.com/ericasiegel/employee-manager/issues"
   },
-  "homepage": "https://github.com/ericasiegel/employee-manager#readme"
+  "homepage": "https://github.com/ericasiegel/employee-manager#readme",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "express": "^4.17.1",
+    "inquirer": "^7.3.3",
+    "mysql2": "^2.2.5"
+  }
 }
