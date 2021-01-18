@@ -25,6 +25,7 @@ INSERT INTO role (title, salary, department_id)
         ('Lawyer', 40000, 5);
 
 
+
 -- insert into employee table
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
     VALUES
