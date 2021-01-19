@@ -186,8 +186,28 @@ class BeginApp {
 
     // Add Department Function
     addDepartment() {
-        console.log('Adding a Department');
-        this.startApp();
+        console.log(`
+
+        * Add A Department *
+        `)
+        inquirer.prompt([
+            {
+                type: 'input',
+                name: 'name',
+                message: 'What is the name of the department?'
+            }
+        ]).then(answers => {
+            const query = connection.query(`INSERT INTO departments SET ?`,
+                {
+                    name: answers.name
+                },
+            function(err, res) {
+                if (err) throw err;
+                console.table(res.affectedRows + ' department added!\n');
+                beginAgain();
+            })
+        })
+        
     }
 
     // Add Role Function
