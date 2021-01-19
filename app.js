@@ -107,7 +107,7 @@ class BeginApp {
 
         * Viewing All Roles *
         `)
-        connection.query(`SELECT * FROM roles`, function(err, res) {
+        connection.query(`SELECT roles.id, roles.title, roles.salary, departments.name AS department FROM roles LEFT JOIN departments ON roles.department_id = departments.id ORDER BY department DESC;`, function(err, res) {
             if (err) throw err;
             console.table(res);
             beginAgain();
@@ -120,7 +120,7 @@ class BeginApp {
 
         * Viewing All Employees *
         `)
-        connection.query(`SELECT * FROM employees`, function(err, res) {
+        connection.query(`SELECT employees.id, employees.first_name, employees.last_name, roles.title AS title, roles.salary AS salary, departments.name AS department, CONCAT(m.first_name, ' ', m.last_name) AS manager FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN departments ON roles.department_id = departments.id LEFT JOIN employees m ON employees.manager_id = m.id;`, function(err, res) {
             if (err) throw err;
             console.table(res);
             beginAgain();
