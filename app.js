@@ -133,7 +133,7 @@ class BeginApp {
 
         * Viewing All Employees by Manager *
         `)
-        connection.query(`SELECT e.first_name, e.last_name, e.manager_id, m.first_name, m.last_name FROM employees e, employees m WHERE e.manager_id = m.first_name;`, function(err, res) {
+            connection.query(`SELECT e.id, e.first_name, e.last_name, CONCAT(m.first_name, ' ', m.last_name) AS manager FROM employees e LEFT JOIN employees m ON e.manager_id = m.id ORDER BY manager DESC;`, function(err, res) {
             if (err) throw err;
             console.table(res);
             beginAgain();
@@ -146,7 +146,7 @@ class BeginApp {
 
         * Viewing All Employees by Department *
         `)
-        connection.query(`SELECT employees.id, employees.first_name, employees.last_name, roles.title AS role, departments.name AS department FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN departments ON roles.department_id = departments.id ORDER BY department;`, function(err, res) {
+        connection.query(`SELECT employees.id, employees.first_name, employees.last_name, roles.title AS role, departments.name AS department FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN departments ON roles.department_id = departments.id ORDER BY department DESC;`, function(err, res) {
             if (err) throw err;
             console.table(res);
             beginAgain();
