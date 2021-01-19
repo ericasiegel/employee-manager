@@ -5,6 +5,9 @@ const consoleTable = require('console.table');
 
 const connection = require('./db/connection');
 
+//get list of managers from employees table
+//get list of roles from roles table
+
 // initialize App
 class BeginApp {
     constructor () {
@@ -161,8 +164,7 @@ class BeginApp {
 
     // Add Role Function
     addRole() {
-        console.log('Adding a Role');
-        this.startApp();
+        this.newRole
     }
 
     // Add Employee Function
