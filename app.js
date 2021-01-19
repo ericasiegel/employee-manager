@@ -6,7 +6,35 @@ const consoleTable = require('console.table');
 const connection = require('./db/connection');
 
 //get list of managers from employees table
+managersArr = [];
+let managerSelection = function() {
+    connection.query(`SELECT CONCAT(m.first_name, ' ', m.last_name) AS managers FROM employees WHERE employees.role_id IS 8;`, function(err, res) {
+        if (err) throw err;
+        managersArr.push(res[i].managers);
+
+    })
+}
+
 //get list of roles from roles table
+rolesArr = [];
+let roleSelection = function() {
+    connection.query(`SELECT * FROM roles;`, function(err, res) {
+        if (err) throw err;
+        rolesArr.push(res[i].title);
+
+    })
+}
+
+//get list of departments from departments table
+departmentsArr = [];
+let departmentSelection = function() {
+    connection.query(`SELECT * FROM departments;`, function(err, res) {
+        if (err) throw err;
+        departmentsArr.push(res[i].name);
+
+    })
+}
+
 
 // initialize App
 class BeginApp {
