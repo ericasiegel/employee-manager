@@ -90,32 +90,67 @@ class BeginApp {
 
     // View All Departments Function
     viewDepartments() {
-        console.log('Viewing all Departments');
-        this.startApp();
+        console.log(`
+
+        * Viewing Departments *
+        `)
+        connection.query(`SELECT * FROM departments`, function(err, res) {
+            if (err) throw err;
+            console.table(res);
+            beginAgain();
+        })
     }
 
     // View All Roles Function
     viewRoles() {
-        console.log('Viewing all Roles');
-        this.startApp();
+        console.log(`
+
+        * Viewing All Roles *
+        `)
+        connection.query(`SELECT * FROM roles`, function(err, res) {
+            if (err) throw err;
+            console.table(res);
+            beginAgain();
+        })
     }
 
     // View All Departments Function
     viewEmployees() {
-        console.log('Viewing all Employees');
-        this.startApp();
+        console.log(`
+
+        * Viewing All Employees *
+        `)
+        connection.query(`SELECT * FROM employees`, function(err, res) {
+            if (err) throw err;
+            console.table(res);
+            beginAgain();
+        })
     }
 
-    // View Employees by Manager Function
+    // View Employees by Manager Function - Bonus
     viewEmployeesByManager() {
-        console.log('Viewing Employees By Manager');
-        this.startApp();
+        console.log(`
+
+        * Viewing All Employees by Manager *
+        `)
+        connection.query(`SELECT e.first_name, e.last_name, e.manager_id, m.first_name, m.last_name FROM employees e, employees m WHERE e.manager_id = m.first_name;`, function(err, res) {
+            if (err) throw err;
+            console.table(res);
+            beginAgain();
+        })
     }
 
-    // View Employees by Department Function
+    // View Employees by Department Function - Bonus
     viewEmployeesByDepartment() {
-        console.log('Viewing Employees By Department');
-        this.startApp();
+        console.log(`
+
+        * Viewing All Employees by Department *
+        `)
+        connection.query(`SELECT employees.id, employees.first_name, employees.last_name, roles.title AS role, departments.name AS department FROM employees LEFT JOIN roles ON employees.role_id = roles.id LEFT JOIN departments ON roles.department_id = departments.id ORDER BY department;`, function(err, res) {
+            if (err) throw err;
+            console.table(res);
+            beginAgain();
+        })
     }
 
     // Add Department Function
@@ -172,6 +207,11 @@ class BeginApp {
         this.startApp();
     }
 
+}
+
+//restart the app after choice has been made
+function beginAgain () {
+    new BeginApp().startApp();
 }
 
 module.exports = BeginApp;
