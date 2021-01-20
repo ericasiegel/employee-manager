@@ -6,33 +6,45 @@ const consoleTable = require('console.table');
 const connection = require('./db/connection');
 
 //get list of managers from employees table
-managersArr = [];
+let managersArr = [];
 let managerSelection = function() {
-    connection.query(`SELECT CONCAT(m.first_name, ' ', m.last_name) AS managers FROM employees WHERE employees.role_id IS 8;`, function(err, res) {
+    connection.query(`SELECT id, CONCAT(first_name, ' ', last_name) AS manager, role_id FROM employees WHERE role_id = 8;`, function(err, res) {
         if (err) throw err;
-        managersArr.push(res[i].managers);
-
+        for (let i = 0; i < res.length; i++) {
+            const managers = res[i].manager;
+            managersArr.push(managers);
+        }
+        
     })
+    return managersArr;
 }
 
 //get list of roles from roles table
-rolesArr = [];
+let rolesArr = [];
 let roleSelection = function() {
-    connection.query(`SELECT * FROM roles;`, function(err, res) {
+    connection.query(`SELECT roles.id, roles.title FROM roles;`, function(err, res) {
         if (err) throw err;
-        rolesArr.push(res[i].title);
-
+        for (let i = 0; i < res.length; i++) {
+            const roles = res[i].title;
+            rolesArr.push(roles);
+        }
+        
     })
+    return rolesArr;
 }
 
 //get list of departments from departments table
-departmentsArr = [];
+let departmentsArr = [];
 let departmentSelection = function() {
     connection.query(`SELECT * FROM departments;`, function(err, res) {
         if (err) throw err;
-        departmentsArr.push(res[i].name);
-
+        for (let i = 0; i < res.length; i++) {
+            const departments = res[i];
+            departmentsArr.push(departments);
+        }
+        
     })
+    return departmentsArr;
 }
 
 
@@ -212,13 +224,87 @@ class BeginApp {
 
     // Add Role Function
     addRole() {
-        this.newRole
+        console.log(`
+
+        * Add A Role *
+        `)
+        inquirer.prompt([
+            {
+                type: 'input',
+                name: 'title',
+                message: "What is the role title?"
+            },
+            {
+                type: 'input',
+                name: 'salary',
+                message: "What is the annual salary?"
+            },
+            {
+                type: 'list',
+                name: 'department',
+                message: "What is the department the role belongs to?",
+                choices: departmentSelection()
+            }
+        ]).then(answers => {
+            // let id = answers.department.id;
+            // console.log(id);
+            const query = connection.query(`INSERT INTO roles SET ?`,
+                {
+                    title: answers.title,
+                    salary: answers.salary,
+                    department_id: answers.department.selectedIndex.id
+                },
+            function(err, res) {
+                if (err) throw err;
+                console.table(res.affectedRows + ' role added!\n');
+                beginAgain();
+            })
+        })
     }
 
     // Add Employee Function
     addEmployee() {
-        console.log('Adding an Employee');
-        this.startApp();
+        console.log(`
+
+        * Add An Employee *
+        `)
+        inquirer.prompt([
+            {
+                type: 'input',
+                name: 'first_name',
+                message: "What is the employee's first name?"
+            },
+            {
+                type: 'input',
+                name: 'last_name',
+                message: "What is the employee's last name?"
+            },
+            {
+                type: 'list',
+                name: 'role',
+                message: "What is the employee's role?",
+                choices: roleSelection()
+            },
+            {
+                type: 'list',
+                name: 'manager',
+                message: "Who is the employee's manager?",
+                choices: managerSelection()
+            }
+        ]).then(answers => {
+            const query = connection.query(`INSERT INTO employees SET ?`,
+                {
+                    first_name: answers.first_name,
+                    last_name: answers.last_name,
+                    role_id: answers.role.id,
+                    manager_id: answers.manager.id
+                },
+            function(err, res) {
+                if (err) throw err;
+                console.table(res.affectedRows + ' employee added!\n');
+                beginAgain();
+            })
+        })
     }
 
     // Update Role Function
