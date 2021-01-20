@@ -40,11 +40,27 @@ let departmentSelection = function() {
         if (err) throw err;
         for (let i = 0; i < res.length; i++) {
             const departments = res[i];
-            departmentsArr.push(departments);
+            departmentsArr.push({
+                name: departments.name,
+                value: departments.id
+            });
         }
         
     })
     return departmentsArr;
+}
+//get list of employees from employees table
+let employeesArr = [];
+let employeeSelection = function() {
+    connection.query(`SELECT id, CONCAT(first_name, ' ', last_name) AS employee FROM employees;`, function(err, res) {
+        if (err) throw err;
+        for (let i = 0; i < res.length; i++) {
+            const employees = res[i];
+            employeesArr.push(employees);
+        }
+        
+    })
+    return employeesArr;
 }
 
 
@@ -247,12 +263,12 @@ class BeginApp {
             }
         ]).then(answers => {
             // let id = answers.department.id;
-            // console.log(id);
+            console.log(answers);
             const query = connection.query(`INSERT INTO roles SET ?`,
                 {
                     title: answers.title,
                     salary: answers.salary,
-                    department_id: answers.department.selectedIndex.id
+                    department_id: answers.department
                 },
             function(err, res) {
                 if (err) throw err;
@@ -321,20 +337,82 @@ class BeginApp {
 
     // Delete Department Function
     deleteDepartment() {
-        console.log('Deleting Department');
-        this.startApp();
+        console.log(`
+
+        * Delete A Department *
+        `)
+        inquirer.prompt([
+            {
+                type: 'list',
+                name: 'name',
+                message: "What department would you like to delete?",
+                choices: departmentSelection()
+            }
+        ]).then(answers => {
+            const query = connection.query(`Delete FROM departments WHERE ?`,
+                {
+                    name: answers.name
+                },
+            function(err, res) {
+                if (err) throw err;
+                console.table(res.affectedRows + ' department deleted!\n');
+                beginAgain();
+            })
+        })
     }
 
     // Delete Role Function
     deleteRole() {
-        console.log('Deleting Role');
-        this.startApp();
+        // console.log(`
+
+        // * Delete A Role *
+        // `)
+        inquirer.prompt([
+            {
+                type: 'list',
+                name: 'role',
+                message: "What role would you like to delete?",
+                choices: roleSelection()
+            }
+        ]).then(answers => {
+            const query = connection.query(`Delete FROM roles WHERE ?`,
+                {
+                    title: answers.role
+                },
+            function(err, res) {
+                if (err) throw err;
+                console.table(res.affectedRows + ' role deleted!\n');
+                beginAgain();
+            })
+        }).catch(error => {
+            throw error;
+        })
     }
 
     // Delete Employee Function
     deleteEmployee() {
-        console.log('Deleting Employee');
-        this.startApp();
+        console.log(`
+
+        * Delete An Employee *
+        `)
+        inquirer.prompt([
+            {
+                type: 'list',
+                name: 'name',
+                message: "What employee would you like to delete?",
+                choices: employeeSelection()
+            }
+        ]).then(answers => {
+            const query = connection.query(`Delete FROM employees WHERE ?`,
+                {
+                    first_name: answers.name
+                },
+            function(err, res) {
+                if (err) throw err;
+                console.table(res.affectedRows + ' employee deleted!\n');
+                beginAgain();
+            })
+        })
     }
 
     // View Budget Function
