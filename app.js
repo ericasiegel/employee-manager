@@ -11,8 +11,11 @@ let managerSelection = function() {
     connection.query(`SELECT id, CONCAT(first_name, ' ', last_name) AS manager, role_id FROM employees WHERE role_id = 8;`, function(err, res) {
         if (err) throw err;
         for (let i = 0; i < res.length; i++) {
-            const managers = res[i].manager;
-            managersArr.push(managers);
+            const managers = res[i];
+            managersArr.push({
+                name: managers.manager,
+                value: managers.id
+            });
         }
         
     })
@@ -25,8 +28,11 @@ let roleSelection = function() {
     connection.query(`SELECT roles.id, roles.title FROM roles;`, function(err, res) {
         if (err) throw err;
         for (let i = 0; i < res.length; i++) {
-            const roles = res[i].title;
-            rolesArr.push(roles);
+            const roles = res[i];
+            rolesArr.push({
+                name: roles.title,
+                value: roles.id
+            });
         }
         
     })
@@ -56,7 +62,10 @@ let employeeSelection = function() {
         if (err) throw err;
         for (let i = 0; i < res.length; i++) {
             const employees = res[i];
-            employeesArr.push(employees);
+            employeesArr.push({
+                name: employees.employee,
+                value: employees.id
+            });
         }
         
     })
@@ -262,8 +271,7 @@ class BeginApp {
                 choices: departmentSelection()
             }
         ]).then(answers => {
-            // let id = answers.department.id;
-            console.log(answers);
+            // console.log(answers);
             const query = connection.query(`INSERT INTO roles SET ?`,
                 {
                     title: answers.title,
@@ -312,8 +320,8 @@ class BeginApp {
                 {
                     first_name: answers.first_name,
                     last_name: answers.last_name,
-                    role_id: answers.role.id,
-                    manager_id: answers.manager.id
+                    role_id: answers.role,
+                    manager_id: answers.manager
                 },
             function(err, res) {
                 if (err) throw err;
