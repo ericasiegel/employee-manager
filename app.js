@@ -96,7 +96,7 @@ class BeginApp {
                           'Delete A Department',
                           'Delete A Role',
                           'Delete An Employee',
-                          'View Department Budgets',
+                        //   'View Department Budgets',
                           'Exit'
                          ]
             }
@@ -107,48 +107,61 @@ class BeginApp {
     startApp() {
         inquirer.prompt(this.startActions).then(data => {
             switch (data.actions) {
+                // View All Departments
                 case "View All Departments":
                     this.viewDepartments();
                     break;
+                // View All Roles
                 case "View All Roles":
                     this.viewRoles();
                     break;
+                // View All Employees
                 case "View All Employees":
                     this.viewEmployees();
                     break;
+                // View Employees By Manager
                 case "View Employees By Manager":
                     this.viewEmployeesByManager();
                     break;
+                //View Employees By Department
                 case "View Employees By Department":
                     this.viewEmployeesByDepartment();
                     break;
+                // Add A Department
                 case "Add A Department":
                     this.addDepartment();
                     break;
+                // Add A Role
                 case "Add A Role":
                     this.addRole();
                     break;
+                // Add An Employee
                 case "Add An Employee":
                     this.addEmployee();
                     break;
+                // Update Employee Role
                 case "Update Employee Role":
                     this.updateRole();
                     break;
+                // Update Employee Manager
                 case "Update Employee Manager":
                     this.updateManager();
                     break;
+                // Delete A Department
                 case "Delete A Department":
                     this.deleteDepartment();
                     break;
+                // Delete A Role
                 case "Delete A Role":
                     this.deleteRole();
                     break;
+                // Delete An Employee
                 case "Delete An Employee":
                     this.deleteEmployee();
                     break;
-                case "View Department Budgets":
-                    this.viewBudgets();
-                    break;
+                // case "View Department Budgets":
+                //     this.viewBudgets();
+                //     break;
                 case "Exit":
                     connection.end();
                     break;
@@ -333,17 +346,75 @@ class BeginApp {
 
     // Update Role Function
     updateRole() {
-        console.log('Updating Employee Role');
-        this.startApp();
+        console.log(`
+
+        * Update Employee Role *
+        `)
+        inquirer.prompt([
+            {
+                type: 'list',
+                name: 'employee',
+                message: "What employee would you like to update?",
+                choices: employeeSelection()
+            },
+            {
+                type: 'list',
+                name: 'role',
+                message: "What role would you like to update?",
+                choices: roleSelection()
+            }
+        ]).then(answers => {
+            const query = connection.query(`UPDATE employees SET ? WHERE ?`,
+                {
+                    role_id: answers.role
+                },
+                {
+                    id: answers.employee
+                },
+            function(err, res) {
+                if (err) throw err;
+                console.table(res.affectedRows + ' employee role updated!\n');
+                beginAgain();
+            })
+        })
     }
 
     // Update Manager Function
     updateManager() {
-        console.log('Updating Employee Manager');
-        this.startApp();
+        console.log(`
+
+        * Update Employee Manager *
+        `)
+        inquirer.prompt([
+            {
+                type: 'list',
+                name: 'employee',
+                message: "What employee would you like to update?",
+                choices: employeeSelection()
+            },
+            {
+                type: 'list',
+                name: 'manager',
+                message: "What role would you like to update?",
+                choices: managerSelection()
+            }
+        ]).then(answers => {
+            const query = connection.query(`UPDATE employees SET ? WHERE ?`,
+                {
+                    manager_id: answers.manager
+                },
+                {
+                    id: answers.employee
+                },
+            function(err, res) {
+                if (err) throw err;
+                console.table(res.affectedRows + ' employee role updated!\n');
+                beginAgain();
+            })
+        })
     }
 
-    // Delete Department Function
+    // Delete Department Function - BONUS
     deleteDepartment() {
         console.log(`
 
@@ -359,7 +430,7 @@ class BeginApp {
         ]).then(answers => {
             const query = connection.query(`Delete FROM departments WHERE ?`,
                 {
-                    name: answers.name
+                    id: answers.name
                 },
             function(err, res) {
                 if (err) throw err;
@@ -369,12 +440,12 @@ class BeginApp {
         })
     }
 
-    // Delete Role Function
+    // Delete Role Function - BONUS
     deleteRole() {
-        // console.log(`
+        console.log(`
 
-        // * Delete A Role *
-        // `)
+        * Delete A Role *
+        `)
         inquirer.prompt([
             {
                 type: 'list',
@@ -385,7 +456,7 @@ class BeginApp {
         ]).then(answers => {
             const query = connection.query(`Delete FROM roles WHERE ?`,
                 {
-                    title: answers.role
+                    id: answers.role
                 },
             function(err, res) {
                 if (err) throw err;
@@ -397,7 +468,7 @@ class BeginApp {
         })
     }
 
-    // Delete Employee Function
+    // Delete Employee Function - BONUS
     deleteEmployee() {
         console.log(`
 
@@ -413,7 +484,7 @@ class BeginApp {
         ]).then(answers => {
             const query = connection.query(`Delete FROM employees WHERE ?`,
                 {
-                    first_name: answers.name
+                    id: answers.name
                 },
             function(err, res) {
                 if (err) throw err;
@@ -423,11 +494,22 @@ class BeginApp {
         })
     }
 
-    // View Budget Function
-    viewBudgets() {
-        console.log('Viewing Department Budgets');
-        this.startApp();
-    }
+    // View Budget Function - BONUS
+    // viewBudgets() {
+    //     console.log(`
+
+    //     * Viewing Budgets By Departments *
+    //     `)
+    //     connection.query(`SELECT roles.id, roles.title, roles.salary, departments.name AS department FROM roles LEFT JOIN departments ON roles.department_id = departments.id ORDER BY department DESC;`, function(err, depts) {
+    //         if (err) throw err;
+    //         connection.query(`SELECT SUM(roles.salary) AS budget FROM roles WHERE department;`, function(err, res) {
+    //             if (err) throw err;
+    //             console.table(res);
+    //             beginAgain();
+    //         })
+    //     })
+        
+    // }
 
 }
 
