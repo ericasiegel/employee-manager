@@ -423,8 +423,8 @@ class BeginApp {
         inquirer.prompt([
             {
                 type: 'list',
-                name: 'name',
-                message: "What department would you like to delete?",
+                name: 'department',
+                message: "Select the department to delete:",
                 choices: departmentSelection()
             }
         ]).then(answers => {
@@ -450,7 +450,7 @@ class BeginApp {
             {
                 type: 'list',
                 name: 'role',
-                message: "What role would you like to delete?",
+                message: "Select a role to delete:",
                 choices: roleSelection()
             }
         ]).then(answers => {
@@ -478,7 +478,7 @@ class BeginApp {
             {
                 type: 'list',
                 name: 'name',
-                message: "What employee would you like to delete?",
+                message: "Select and employee to delete:",
                 choices: employeeSelection()
             }
         ]).then(answers => {
