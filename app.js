@@ -6,7 +6,6 @@ const consoleTable = require('console.table');
 const connection = require('./db/connection');
 
 //get list of managers from employees table
-
 let managerSelection = function() {
     let managersArr = [];
     connection.query(`SELECT id, CONCAT(first_name, ' ', last_name) AS manager, role_id FROM employees WHERE role_id = 8;`, function(err, res) {
@@ -23,7 +22,6 @@ let managerSelection = function() {
 }
 
 //get list of roles from roles table
-
 let roleSelection = function() {
     let rolesArr = [];
     connection.query(`SELECT roles.id, roles.title FROM roles;`, function(err, res) {
@@ -40,7 +38,6 @@ let roleSelection = function() {
 }
 
 //get list of departments from departments table
-
 let departmentSelection = function() {
     let departmentsArr = [];
     connection.query(`SELECT * FROM departments;`, function(err, res) {
@@ -57,7 +54,6 @@ let departmentSelection = function() {
     return departmentsArr;
 }
 //get list of employees from employees table
-
 let employeeSelection = function() {
     let employeesArr = [];
     connection.query(`SELECT id, CONCAT(first_name, ' ', last_name) AS employee FROM employees;`, function(err, res) {
@@ -74,12 +70,6 @@ let employeeSelection = function() {
     })
     return employeesArr;
 }
-
-// const getEmployees = employeeSelection();
-// const getRoles = roleSelection();
-// const getDepartments = departmentSelection();
-// const getManagers = managerSelection();
-
 
 // initialize App
 class BeginApp {
@@ -299,7 +289,6 @@ class BeginApp {
                 choices: this.getDepartments
             }
         ]).then(answers => {
-            // console.log(answers);
             const query = connection.query(`INSERT INTO roles SET ?`,
                 {
                     title: answers.title,
