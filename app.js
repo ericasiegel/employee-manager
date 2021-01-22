@@ -6,8 +6,9 @@ const consoleTable = require('console.table');
 const connection = require('./db/connection');
 
 //get list of managers from employees table
-let managersArr = [];
+
 let managerSelection = function() {
+    let managersArr = [];
     connection.query(`SELECT id, CONCAT(first_name, ' ', last_name) AS manager, role_id FROM employees WHERE role_id = 8;`, function(err, res) {
         if (err) throw err;
         for (let i = 0; i < res.length; i++) {
@@ -16,15 +17,15 @@ let managerSelection = function() {
                 name: managers.manager,
                 value: managers.id
             });
-        }
-        
+        }   
     })
     return managersArr;
 }
 
 //get list of roles from roles table
-let rolesArr = [];
+
 let roleSelection = function() {
+    let rolesArr = [];
     connection.query(`SELECT roles.id, roles.title FROM roles;`, function(err, res) {
         if (err) throw err;
         for (let i = 0; i < res.length; i++) {
@@ -33,15 +34,15 @@ let roleSelection = function() {
                 name: roles.title,
                 value: roles.id
             });
-        }
-        
+        } 
     })
     return rolesArr;
 }
 
 //get list of departments from departments table
-let departmentsArr = [];
+
 let departmentSelection = function() {
+    let departmentsArr = [];
     connection.query(`SELECT * FROM departments;`, function(err, res) {
         if (err) throw err;
         for (let i = 0; i < res.length; i++) {
@@ -56,10 +57,12 @@ let departmentSelection = function() {
     return departmentsArr;
 }
 //get list of employees from employees table
-let employeesArr = [];
+
 let employeeSelection = function() {
+    let employeesArr = [];
     connection.query(`SELECT id, CONCAT(first_name, ' ', last_name) AS employee FROM employees;`, function(err, res) {
         if (err) throw err;
+        // console.log(res);
         for (let i = 0; i < res.length; i++) {
             const employees = res[i];
             employeesArr.push({
@@ -72,10 +75,20 @@ let employeeSelection = function() {
     return employeesArr;
 }
 
+// const getEmployees = employeeSelection();
+// const getRoles = roleSelection();
+// const getDepartments = departmentSelection();
+// const getManagers = managerSelection();
+
 
 // initialize App
 class BeginApp {
     constructor () {
+        
+        this.getEmployees = employeeSelection();
+        this.getRoles = roleSelection();
+        this.getDepartments = departmentSelection();
+        this.getManagers = managerSelection();
 
         // Set of actions for the user to pick
         this.startActions = [
@@ -255,6 +268,8 @@ class BeginApp {
                 if (err) throw err;
                 console.table(res.affectedRows + ' department added!\n');
                 beginAgain();
+
+                // return getDepartments;
             })
         })
         
@@ -281,7 +296,7 @@ class BeginApp {
                 type: 'list',
                 name: 'department',
                 message: "What is the department the role belongs to?",
-                choices: departmentSelection()
+                choices: this.getDepartments
             }
         ]).then(answers => {
             // console.log(answers);
@@ -320,13 +335,13 @@ class BeginApp {
                 type: 'list',
                 name: 'role',
                 message: "What is the employee's role?",
-                choices: roleSelection()
+                choices: this.getRoles
             },
             {
                 type: 'list',
                 name: 'manager',
                 message: "Who is the employee's manager?",
-                choices: managerSelection()
+                choices: this.getManagers
             }
         ]).then(answers => {
             const query = connection.query(`INSERT INTO employees SET ?`,
@@ -349,28 +364,29 @@ class BeginApp {
         console.log(`
 
         * Update Employee Role *
-        `)
+        `);
+        // const employeeselect = employeeSelection();
         inquirer.prompt([
             {
                 type: 'list',
                 name: 'employee',
                 message: "What employee would you like to update?",
-                choices: employeeSelection()
+                choices: this.getEmployees
             },
             {
                 type: 'list',
                 name: 'role',
-                message: "What role would you like to update?",
-                choices: roleSelection()
+                message: "Select their new role:",
+                choices: this.getRoles
             }
         ]).then(answers => {
             const query = connection.query(`UPDATE employees SET ? WHERE ?`,
-                {
+                [{
                     role_id: answers.role
                 },
                 {
                     id: answers.employee
-                },
+                }],
             function(err, res) {
                 if (err) throw err;
                 console.table(res.affectedRows + ' employee role updated!\n');
@@ -390,22 +406,22 @@ class BeginApp {
                 type: 'list',
                 name: 'employee',
                 message: "What employee would you like to update?",
-                choices: employeeSelection()
+                choices: this.getEmployees
             },
             {
                 type: 'list',
                 name: 'manager',
-                message: "What role would you like to update?",
-                choices: managerSelection()
+                message: "What Manager would you like to update?",
+                choices: this.getManagers
             }
         ]).then(answers => {
             const query = connection.query(`UPDATE employees SET ? WHERE ?`,
-                {
+                [{
                     manager_id: answers.manager
                 },
                 {
                     id: answers.employee
-                },
+                }],
             function(err, res) {
                 if (err) throw err;
                 console.table(res.affectedRows + ' employee role updated!\n');
@@ -425,12 +441,12 @@ class BeginApp {
                 type: 'list',
                 name: 'department',
                 message: "Select the department to delete:",
-                choices: departmentSelection()
+                choices: this.getDepartments
             }
         ]).then(answers => {
             const query = connection.query(`Delete FROM departments WHERE ?`,
                 {
-                    id: answers.name
+                    id: answers.department
                 },
             function(err, res) {
                 if (err) throw err;
@@ -451,7 +467,7 @@ class BeginApp {
                 type: 'list',
                 name: 'role',
                 message: "Select a role to delete:",
-                choices: roleSelection()
+                choices: this.getRoles
             }
         ]).then(answers => {
             const query = connection.query(`Delete FROM roles WHERE ?`,
@@ -479,7 +495,7 @@ class BeginApp {
                 type: 'list',
                 name: 'name',
                 message: "Select and employee to delete:",
-                choices: employeeSelection()
+                choices: this.getEmployees
             }
         ]).then(answers => {
             const query = connection.query(`Delete FROM employees WHERE ?`,
